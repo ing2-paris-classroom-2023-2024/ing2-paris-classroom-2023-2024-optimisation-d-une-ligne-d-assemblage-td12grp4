@@ -193,7 +193,7 @@ struct Graphe affichergraphe() {
 
 int main() {
 
-    printf("Hello, World!\n");
+
     struct Graphe graphe = affichergraphe();
     return 0;
 }
