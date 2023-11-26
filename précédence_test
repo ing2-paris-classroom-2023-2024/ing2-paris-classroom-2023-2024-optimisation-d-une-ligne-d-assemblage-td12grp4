@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Définition des structures de données
+// Définitions des structures de données
 typedef struct node {
     int vertex;
     struct node* next;
@@ -12,7 +12,7 @@ typedef struct {
     Node** adjLists;
 } Graph;
 
-// Fonctions pour la gestion du graphe
+// Prototypes de fonctions pour la gestion du graphe
 Graph* createGraph(int vertices);
 void addEdge(Graph* graph, int src, int dest);
 void printGraph(Graph* graph);
@@ -22,17 +22,23 @@ void freeGraph(Graph* graph);
 int main() {
     FILE *file = fopen("precedences.txt", "r");
     FILE *outputFile = fopen("output.txt", "w");
+
+    // Validation de l'ouverture des fichiers
     if (file == NULL || outputFile == NULL) {
         perror("Erreur lors de l'ouverture des fichiers");
         return EXIT_FAILURE;
     }
 
-    int maxVertices = 100;
+    int maxVertices = 100; // Nombre maximal de sommets attendu
     Graph* graph = createGraph(maxVertices);
 
     int timeCycle;
-    fscanf(file, "%d", &timeCycle); // Lecture du temps de cycle
-    fprintf(outputFile, "Temps de cycle: %d\n", timeCycle);
+    if (fscanf(file, "%d", &timeCycle) != 1) { // Validation de la lecture du temps de cycle
+        fprintf(stderr, "Erreur de lecture du temps de cycle\n");
+        return EXIT_FAILURE;
+    }
+
+    fprintf(outputFile, "Temps de cycle: %d\n", timeCycle); // Écriture du temps de cycle
 
     int src, dest;
     while (fscanf(file, "%d %d", &src, &dest) == 2) {
@@ -48,7 +54,51 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-// Implémentation des fonctions de graphe
-// ...
+// Implémentation de la fonction createGraph
+Graph* createGraph(int vertices) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = (Node**)malloc(vertices * sizeof(Node*));
 
-// N'oubliez pas de compléter les fonctions ci-dessus selon les définitions
+    for (int i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+    }
+
+    return graph;
+}
+
+// Implémentation de la fonction addEdge
+void addEdge(Graph* graph, int src, int dest) {
+    // Ajout d'un arc de src à dest
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = dest;
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+}
+
+// Implémentation de la fonction printGraph
+void printGraph(Graph* graph) {
+    for (int i = 0; i < graph->numVertices; i++) {
+        Node* temp = graph->adjLists[i];
+        printf("Liste d'adjacence du sommet %d\n", i);
+        while (temp) {
+            printf("%d -> ", temp->vertex);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+}
+
+// Implémentation de la fonction freeGraph
+void freeGraph(Graph* graph) {
+    for (int i = 0; i < graph->numVertices; i++) {
+        Node* temp = graph->adjLists[i];
+        while (temp) {
+            Node* next = temp->next;
+            free(temp);
+            temp = next;
+        }
+    }
+    free(graph->adjLists);
+    free(graph);
+}
