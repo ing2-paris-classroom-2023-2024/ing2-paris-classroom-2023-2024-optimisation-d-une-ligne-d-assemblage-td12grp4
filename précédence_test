@@ -1,31 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
-    int from;
-    int to;
-} Arc;
+// Définition des structures de données
+typedef struct node {
+    int vertex;
+    struct node* next;
+} Node;
 
+typedef struct {
+    int numVertices;
+    Node** adjLists;
+} Graph;
+
+// Fonctions pour la gestion du graphe
+Graph* createGraph(int vertices);
+void addEdge(Graph* graph, int src, int dest);
+void printGraph(Graph* graph);
+void freeGraph(Graph* graph);
+
+// Fonction principale
 int main() {
     FILE *file = fopen("precedences.txt", "r");
-    if (file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+    FILE *outputFile = fopen("output.txt", "w");
+    if (file == NULL || outputFile == NULL) {
+        perror("Erreur lors de l'ouverture des fichiers");
         return EXIT_FAILURE;
     }
 
-    Arc arcs[100]; //pour 100 arcs
-    int arcCount = 0;
+    int maxVertices = 100;
+    Graph* graph = createGraph(maxVertices);
 
-    while (fscanf(file, "%d %d", &arcs[arcCount].from, &arcs[arcCount].to) == 2) {
-        arcCount++;
+    int timeCycle;
+    fscanf(file, "%d", &timeCycle); // Lecture du temps de cycle
+    fprintf(outputFile, "Temps de cycle: %d\n", timeCycle);
+
+    int src, dest;
+    while (fscanf(file, "%d %d", &src, &dest) == 2) {
+        addEdge(graph, src, dest);
     }
+
+    printGraph(graph); // Affichage du graphe
+    freeGraph(graph); // Libération de la mémoire
 
     fclose(file);
-
-    // Afficher les arcs lus pour vérification
-    for (int i = 0; i < arcCount; i++) {
-        printf("(%d, %d)\n", arcs[i].from, arcs[i].to);
-    }
+    fclose(outputFile);
 
     return EXIT_SUCCESS;
 }
+
+// Implémentation des fonctions de graphe
+// ...
+
+// N'oubliez pas de compléter les fonctions ci-dessus selon les définitions
