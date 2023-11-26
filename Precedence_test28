@@ -15,7 +15,7 @@ Operation* lireOperations(const char* nomFichier, int* taille) {
         return NULL;
     }
 
-    // Comptez le nombre d'opérations dans le fichier
+    // Compter le nombre d'opérations dans le fichier
     int compteur = 0;
     int scanRes;
     double tmp;
