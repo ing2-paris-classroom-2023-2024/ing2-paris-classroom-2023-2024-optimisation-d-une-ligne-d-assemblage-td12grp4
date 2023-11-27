@@ -374,7 +374,7 @@ void  exclusion_temps(struct Graphe graphe) {
 }
 
 int main() {
-    printf("Hello, World!\n");
+
     struct Graphe graphe = exclusion();
     exclusion_temps(graphe);
 
