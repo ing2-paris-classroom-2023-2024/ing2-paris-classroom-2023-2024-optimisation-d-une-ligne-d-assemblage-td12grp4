@@ -6,15 +6,16 @@ struct Graphe {
     int ordre;
     int **matrice;
     int taille;
+    int min;
 };
 
 
-struct Graphe affichergraphe() {
+struct Graphe exclusion() {
     struct Graphe monGraphe;
     FILE *fichier;
     char nom[100];
 
-    printf("Donnez le nom du fichier (mettez graphe.txt) :\n ");
+    printf("Donnez le nom du fichier (mettez exclusion.txt) :\n ");
     scanf("%s", nom);
 
     fichier = fopen(nom, "r");
@@ -52,6 +53,7 @@ struct Graphe affichergraphe() {
     for (int i=0;i<ordre+1 ;i++){
         tab[i]=i;
     }
+    monGraphe.min=min;
     monGraphe.ordre=ordre;
     monGraphe.taille=taille;
     fclose(fichier);
@@ -73,7 +75,7 @@ struct Graphe affichergraphe() {
             monGraphe.matrice[i1][i2] = 0;
         }
     }
-    printf("taille vaux %d\n",taille);
+
 // si on ne peut pas mettre les stations ensemble la valeur vaut -1
     for (int i = 0; i < taille; i++) {
         fscanf(fichier, "%d %d ", &u, &v);
@@ -172,15 +174,7 @@ struct Graphe affichergraphe() {
         }
     }
 
-/*
-    for (int i1 = 0; i1 < monGraphe.ordre+1; i1++) {
-        for (int i2 = 0; i2 < monGraphe.ordre+1; i2++) {
-            if (monGraphe.matrice[i1][i2] !=0  && monGraphe.matrice[i1][i2] !=-1 && monGraphe.matrice[i1][i2] !=-2 ) {
-                printf("%d %d %d \n",i1,i2 ,monGraphe.matrice[i1][i2]);
-            }
-        }
-    }
-*/
+
     for (int i5=0;i5< monGraphe.ordre+1; i5++)
         if (tab2[i5]!=-10){
             printf("le sommet %d appartient au groupe %d \n" ,i5,tab2[i5]) ;
@@ -191,9 +185,201 @@ struct Graphe affichergraphe() {
     return monGraphe;
 }
 
+void  exclusion_temps(struct Graphe graphe) {
+
+    char nomdufichier [100];
+    printf("Entrez le nom du fichier (operations.txt) :\n");
+    scanf("%s", nomdufichier);
+
+    FILE *file = fopen(nomdufichier, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+
+
+    int a10=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min;
+    double time2;
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a10==0){
+            min=num2;
+        }
+
+        if (num2>a10){
+            a10=num2;
+        }
+
+    }
+
+    fclose(file);
+    char nomdufichier2 [100];
+    printf("Entrez le nom du fichier (temps_cycle.txt) :\n");
+    scanf("%s", nomdufichier2);
+
+    FILE *file2 = fopen(nomdufichier2, "r");
+    if (file2 == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+    int temps_cycle;
+    fscanf(file2,"%d",&temps_cycle);
+
+    fclose (file2);
+    FILE *file3 = fopen(nomdufichier, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+    // Initialisation du tableau des sommets avec la valeur -10
+    float tableau[a10];
+    for (int i = min; i <a10+1 ; i++) {
+        tableau[i] = -10.0;
+    }
+
+    int num;
+    double time;
+    while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+        tableau[num] = time;
+
+
+
+    }
+    fclose(file3);
+
+    // Affichage du tableau des temps
+    /*
+    for (int i = min; i < a10+1; i++) {
+        if (tableau[i] != -10.0) {
+            printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+        } else {
+            printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+        }
+    }
+*/
+    float tabtemps[graphe.ordre+1];
+    for (int z5=0; z5<graphe.ordre+1;z5++){
+        tabtemps[z5]=0;
+    }
+    int a;
+    int h=0;
+    int ve=0;
+    int groupe=0-min;
+    int tab2[graphe.ordre+1];
+    int groupemax=0;
+    for (int o=0 ;o<graphe.ordre+1;o++){
+        tab2[o]=-10;
+
+    }
+    for (int z=0 ; z<graphe.ordre+1;z++){
+        if (tab2[z]==-10){
+            groupe++;
+            if (groupe>1){
+                for (int i6=0 ;i6<graphe.ordre;i6++){
+                    if (tab2[i6]>=groupemax){
+                        groupemax=tab2[i6];
+
+                    }
+
+                }
+
+                groupe=groupemax+1;
+            }
+
+
+
+
+
+
+        }
+
+
+
+        for (int z1=0 ; z1<graphe.ordre+1;z1++){
+
+
+            if (tab2[z1]==-10){
+
+
+
+                if (graphe.matrice[z][z1] ==0  ){
+
+                    a=3;
+                    for (int z2=0 ; z2<graphe.ordre+1;z2++){
+
+
+                        if (tab2[z2]==groupe){
+                            if (graphe.matrice[z2][z1] !=0 && graphe.matrice[z1][z2] !=0 ){
+                                a=2;
+                            }
+                        }
+
+                    }
+                    if (a==3 && tabtemps[groupe]+tableau[z1]<temps_cycle && tableau[z1]!=-10 ){
+                        tab2[z1]=groupe;
+                        tabtemps[groupe]=tabtemps[groupe]+tableau[z1];
+
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                }
+            }
+        }
+    }
+
+/*
+    for (int i5=0;i5< graphe.ordre+1; i5++){
+
+
+        if (tab2[i5]!=-10){
+            printf("le sommet %d appartient au groupe %d \n" ,i5,tab2[i5]) ;
+        }
+
+    }
+*/
+    for (int i5=0; i5<graphe.ordre ;i5++){
+        if (tabtemps[i5]!=0){
+            printf("le temps du groupe %d est %f\n",i5,tabtemps[i5]);
+
+        }
+    }
+
+
+}
+
 int main() {
+    printf("Hello, World!\n");
+    struct Graphe graphe = exclusion();
+    exclusion_temps(graphe);
 
 
-    struct Graphe graphe = affichergraphe();
+
+
     return 0;
 }
