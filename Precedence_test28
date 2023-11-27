@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Définition de la structure pour stocker les données d'une opération
+typedef struct {
+    int numeroOperation;
+    double tempsExecution;
+} Operation;
+
+// Fonction pour lire les données du fichier
+Operation* lireOperations(const char* nomFichier, int* taille) {
+    FILE* fichier = fopen(nomFichier, "r");
+    if (!fichier) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return NULL;
+    }
+
+    // Compter le nombre d'opérations dans le fichier
+    int compteur = 0;
+    int scanRes;
+    double tmp;
+    while ((scanRes = fscanf(fichier, "%*d %lf", &tmp)) != EOF) {
+        if (scanRes == 1) compteur++;
+    }
+
+    // Allouez de la mémoire pour stocker les opérations
+    Operation* operations = (Operation*) malloc(compteur * sizeof(Operation));
+    if (!operations) {
+        perror("Erreur d'allocation mémoire");
+        fclose(fichier);
+        return NULL;
+    }
+
+    // Revenir au début du fichier pour lire réellement les données
+    rewind(fichier);
+
+    int i = 0;
+    while (fscanf(fichier, "%d %lf", &operations[i].numeroOperation, &operations[i].tempsExecution) == 2) {
+        i++;
+    }
+
+    *taille = i; // Stockez le nombre d'opérations lues
+    fclose(fichier);
+    return operations;
+}
+
+int main() {
+    int nombreOperations;
+    Operation* operations = lireOperations("operations.txt", &nombreOperations);
+
+    if (operations != NULL) {
+        printf("Opérations lues du fichier :\n");
+        for (int i = 0; i < nombreOperations; i++) {
+            printf("Opération %d : Temps d'exécution = %.2f secondes\n", 
+                   operations[i].numeroOperation, operations[i].tempsExecution);
+        }
+
+        free(operations); // Libérez la mémoire allouée
+    } else {
+        printf("Aucune opération n'a été lue du fichier.\n");
+    }
+
+    return 0;
+}

@@ -1,0 +1,66 @@
+int main() {
+
+    char nomdufichier [100];
+    printf("Entrez le nom du fichier (par exemple: graph.txt) :\n");
+    scanf("%s", nomdufichier);
+
+    FILE *file = fopen(nomdufichier, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return EXIT_FAILURE;
+    }
+    int a=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min;
+    double time2;
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a==0){
+            min=num2;
+        }
+
+        if (num2>a){
+            a=num2;
+        }
+
+    }
+
+    fclose(file);
+
+
+file = fopen(nomdufichier, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return EXIT_FAILURE;
+    }
+
+    // Initialisation du tableau des sommets avec la valeur -10
+    double tableau[a];
+    for (int i = min; i <a+1 ; i++) {
+        tableau[i] = -10.0;
+    }
+
+    int num;
+    double time;
+    while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+            tableau[num] = time;
+
+    }
+    fclose(file);
+
+    // Affichage du tableau des temps
+    for (int i = min; i < a+1; i++) {
+        if (tableau[i] != -10.0) {
+            printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+        } else {
+            printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+        }
+    }
+
+    return 0;
+}
