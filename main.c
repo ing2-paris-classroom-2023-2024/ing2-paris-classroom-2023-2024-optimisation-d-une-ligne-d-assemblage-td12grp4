@@ -174,7 +174,7 @@ struct Graphe exclusion() {
         }
     }
 
-
+    printf("contrainte d'exclusion\n ");
     for (int i5=0;i5< monGraphe.ordre+1; i5++)
         if (tab2[i5]!=-10){
             printf("le sommet %d appartient au groupe %d \n" ,i5,tab2[i5]) ;
@@ -229,8 +229,9 @@ void  exclusion_temps(struct Graphe graphe) {
         perror("Erreur lors de l'ouverture du fichier");
 
     }
-    int temps_cycle;
-    fscanf(file2,"%d",&temps_cycle);
+    float temps_cycle;
+    fscanf(file2,"%f",&temps_cycle);
+
 
     fclose (file2);
     FILE *file3 = fopen(nomdufichier, "r");
@@ -311,7 +312,15 @@ void  exclusion_temps(struct Graphe graphe) {
 
 
 
+
+
                 if (graphe.matrice[z][z1] ==0  ){
+                    if (tab2[z]==-10 &&  tabtemps[groupe]+tableau[z]<=temps_cycle){
+                        tabtemps[groupe]=tabtemps[groupe]+tableau[z];
+                        tab2[z]=groupe;
+                    }
+
+
 
                     a=3;
                     for (int z2=0 ; z2<graphe.ordre+1;z2++){
@@ -324,9 +333,13 @@ void  exclusion_temps(struct Graphe graphe) {
                         }
 
                     }
-                    if (a==3 && tabtemps[groupe]+tableau[z1]<temps_cycle && tableau[z1]!=-10 ){
+
+                    if (a==3 && tabtemps[groupe]+tableau[z1]<temps_cycle && tab2[z1]==-10){
                         tab2[z1]=groupe;
+
+
                         tabtemps[groupe]=tabtemps[groupe]+tableau[z1];
+
 
 
 
@@ -353,7 +366,7 @@ void  exclusion_temps(struct Graphe graphe) {
         }
     }
 
-/*
+    printf("contrainte d'exclusion + temps de cycle \n");
     for (int i5=0;i5< graphe.ordre+1; i5++){
 
 
@@ -362,7 +375,27 @@ void  exclusion_temps(struct Graphe graphe) {
         }
 
     }
-*/
+    int variable;
+    int groupes[graphe.ordre];
+    for (int i7=0; i7<graphe.ordre+1;i7++){
+        groupes[i7]=-10;
+    }
+    for (int i7=0; i7<graphe.ordre+1;i7++){
+        variable=0;
+        for (int i8=0; i8<graphe.ordre+1;i8++){
+            if (tab2[i8]==i7){
+                variable++;
+            }
+
+
+        }
+        groupes[i7]=variable;
+
+        if (variable!=0){
+            printf("le groupe %d est compose de %d sommets \n",i7,variable);
+        }
+
+    }
     for (int i5=0; i5<graphe.ordre ;i5++){
         if (tabtemps[i5]!=0){
             printf("le temps du groupe %d est %f\n",i5,tabtemps[i5]);
@@ -374,7 +407,7 @@ void  exclusion_temps(struct Graphe graphe) {
 }
 
 int main() {
-
+    printf("Hello, World!\n");
     struct Graphe graphe = exclusion();
     exclusion_temps(graphe);
 
