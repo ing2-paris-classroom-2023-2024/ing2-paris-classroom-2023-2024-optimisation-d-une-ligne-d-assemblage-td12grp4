@@ -1,0 +1,1719 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#include <string.h>
+
+
+struct Graphe {
+    int ordre;
+    int **matrice;
+    int taille;
+    int min;
+};
+
+void afficher_fichier(){
+    FILE *fichier;
+    char nom[100];
+
+
+
+
+    fichier = fopen("exclusion.txt", "r");
+
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier %s\n", nom);
+        }
+        int u, v,poids ;
+        printf("fichier exclusion.txt \n ");
+    char carractere[100];
+    int taille = 0;
+    int ordre = 0;
+    int min=0;
+    int f=0;
+    while ( fscanf(fichier, "%d %d ", &u, &v) != EOF) {
+        if (f==0){
+            min=u;
+
+        }
+        f++;
+
+
+        taille++;
+        if (u>ordre){
+            ordre=u;
+        }
+        if (v>ordre){
+            ordre=v;
+        }
+
+        printf("%d %d\n",u,v);
+
+    }
+
+    fclose(fichier);
+
+    printf("valeurs du fichier operations.txt \n");
+    FILE *file = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+
+
+    int a10=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min2;
+    double time2;
+
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a10==0){
+            min2=num2;
+        }
+
+        if (num2>a10){
+            a10=num2;
+        }
+        printf("%d , %f \n",num2,time2);
+
+    }
+
+    fclose(file);
+
+
+FILE *file2 = fopen("temps_cycle.txt", "r");
+if (file2 == NULL) {
+perror("Erreur lors de l'ouverture du fichier");
+
+}
+float temps_cycle;
+fscanf(file2,"%f",&temps_cycle);
+printf("valeur du temps de cycle %f \n",temps_cycle);
+
+
+fclose (file2);
+
+    FILE *fichier2;
+    int u2 =0;
+    int v2=0;
+    int min3=100;
+    int taille2;
+    fichier2 = fopen("precedences.txt", "r");
+    printf("fichier precedences.txt\n" );
+    if (fichier2 == NULL) {
+        printf("Erreur lors de l'ouverture du fichier \n");
+        exit(1);
+    }
+    int ordre2=0;
+    while ( fscanf(fichier2, "%d %d ", &u, &v) != EOF) {
+        printf("%d , %d\n ",u,v);
+
+        if (u2<min3){
+            min3=u2;
+        }
+
+
+        if (v2<min3){
+            min3=v2;
+        }
+
+
+        taille2++;
+        if (u>ordre2){
+            ordre2=u;
+        }
+        if (v>ordre2){
+            ordre2=v;
+        }
+
+    }
+    fclose (fichier2);
+    FILE *fichier3;
+
+
+
+
+}
+struct Graphe exclusion() {
+    printf("contrainte d'exclusion\n ");
+    struct Graphe monGraphe;
+    FILE *fichier;
+    char nom[100];
+
+
+
+
+    fichier = fopen("exclusion.txt", "r");
+
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier %s\n", nom);
+        exit(1);
+    }
+
+    int u, v,poids ;
+char carractere[100];
+    int taille = 0;
+    int ordre = 0;
+int min=0;
+int f=0;
+    while ( fscanf(fichier, "%d %d ", &u, &v) != EOF) {
+        if (f==0){
+            min=u;
+
+        }
+        f++;
+
+
+        taille++;
+        if (u>ordre){
+            ordre=u;
+        }
+        if (v>ordre){
+            ordre=v;
+        }
+
+
+
+}
+    int tab[ordre];
+
+    for (int i=0;i<ordre+1 ;i++){
+        tab[i]=i;
+    }
+    monGraphe.min=min;
+       monGraphe.ordre=ordre;
+     monGraphe.taille=taille;
+    fclose(fichier);
+
+    fichier = fopen("exclusion.txt", "r");
+
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier %s\n", nom);
+        exit(1);
+    }
+
+    monGraphe.matrice = (int **)malloc((ordre+1) * sizeof(int *));
+    for (int i = 0; i < ordre+1; i++) {
+        monGraphe.matrice[i] = (int *)malloc((ordre+1) * sizeof(int));
+    }
+// si on  peut  mettre les stations ensemble la valeur vaut 0
+    for (int i1 = 0; i1 < ordre+1; i1++) {
+        for (int i2 = 0; i2 < ordre+1; i2++) {
+            monGraphe.matrice[i1][i2] = 0;
+        }
+    }
+
+// si on ne peut pas mettre les stations ensemble la valeur vaut -1
+    for (int i = 0; i < taille; i++) {
+        fscanf(fichier, "%d %d ", &u, &v);
+
+        tab[u]=0;
+        tab[v]=0;
+        monGraphe.matrice[u][v] = -1;
+        monGraphe.matrice[v][u] = -1;
+    }
+
+
+// si la station n'existe pas la valeur vaut -2
+    for (int i1 = 0; i1 < monGraphe.ordre+1; i1++) {
+       if (tab[i1]!=0){
+           for (int i2 = 0; i2 < monGraphe.ordre+1; i2++){
+               monGraphe.matrice[i1][i2] = -2;
+               monGraphe.matrice[i2][i1] = -2;
+               monGraphe.matrice[i2][i2] = -2;
+           }
+       }
+    }
+
+    for (int i=0 ; i<min ; i++){
+        for (int i2 = 0; i2 < monGraphe.ordre+1; i2++){
+            monGraphe.matrice[i][i2] = -2;
+            monGraphe.matrice[i2][i] = -2;
+        }
+    }
+    fclose(fichier);
+    FILE *file = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+
+
+    int a10=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min2;
+    double time2;
+
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a10==0){
+            min2=num2;
+        }
+
+        if (num2>a10){
+            a10=num2;
+        }
+
+
+    }
+
+    fclose(file);
+    char nomdufichier2 [100];
+
+
+    FILE *file2 = fopen("temps_cycle.txt", "r");
+    if (file2 == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+    float temps_cycle;
+    fscanf(file2,"%f",&temps_cycle);
+
+
+
+    fclose (file2);
+    FILE *file3 = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+    // Initialisation du tableau des sommets avec la valeur -10
+    float tableau[a10];
+    for (int i = min2; i <a10+1 ; i++) {
+        tableau[i] = -10.0;
+    }
+
+    int num;
+    double time;
+    while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+        tableau[num] = time;
+
+
+
+    }
+    fclose(file3);
+
+    // Affichage du tableau des temps
+    /*
+    for (int i = min; i < a10+1; i++) {
+        if (tableau[i] != -10.0) {
+            printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+        } else {
+            printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+        }
+    }
+*/
+    float tabtemps[monGraphe.ordre+1];
+    for (int z5=0; z5<monGraphe.ordre+1;z5++){
+        tabtemps[z5]=0;
+    }
+
+int groupemax;
+int a;
+int ve=0;
+    int groupe=0-min;
+    int tab2[monGraphe.ordre+1];
+    for (int o=0 ;o<monGraphe.ordre+1;o++){
+        tab2[o]=-10;
+
+    }
+for (int z=0 ; z<monGraphe.ordre+1;z++){
+if (tab2[z]==-10){
+    groupe++;
+}
+
+
+
+    for (int z1=0 ; z1<monGraphe.ordre+1;z1++){
+
+        if (tab2[z1]==-10){
+
+
+
+        if (monGraphe.matrice[z][z1] ==0  ){
+
+            a=3;
+            for (int z2=0 ; z2<monGraphe.ordre+1;z2++){
+
+
+                    if (tab2[z2]==groupe){
+                        if (monGraphe.matrice[z2][z1] !=0 && monGraphe.matrice[z1][z2] !=0 ){
+                            a=2;
+                        }
+                    }
+
+            }
+            if (a==3){
+                tab2[z1]=groupe;
+                groupemax=groupe;
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+    }
+    }
+}
+
+    int k=0;
+    for (int i11=1;i11<groupemax+1;i11++ ){
+        for (int i5=min2;i5< monGraphe.ordre+1; i5++){
+
+            if (tableau[i5]!=-10  ){
+                k=0;
+                for (int p=min2;p<monGraphe.ordre+1;p++){
+                    if (monGraphe.matrice[i5][p]!=-2){
+                        k=1;
+                    }
+                }
+
+                if (k==0 && tab2[i5]==-10){
+
+                        tab2[i5]=i11;
+
+                }
+            }
+        }
+    }
+
+
+for (int i9=1;i9<groupemax+1;i9++ ){
+    printf("\n groupe %d \n:",i9);
+for (int i5=0;i5< monGraphe.ordre+1; i5++){
+    if (tab2[i5]!=-10 && tab2[i5]==i9){
+
+        printf(" %d," ,i5) ;
+    }
+    }
+}
+    int variable;
+    int groupes[monGraphe.ordre];
+    printf("\n");
+    for (int i7=0; i7<monGraphe.ordre+1;i7++){
+        groupes[i7]=-10;
+    }
+    for (int i7=0; i7<monGraphe.ordre+1;i7++){
+        variable=0;
+        for (int i8=0; i8<monGraphe.ordre+1;i8++){
+            if (tab2[i8]==i7){
+                variable++;
+            }
+
+
+        }
+        groupes[i7]=variable;
+
+        if (variable!=0){
+            printf("le groupe %d est compose de %d sommets \n",i7,variable);
+        }
+
+    }
+
+
+
+
+   return monGraphe ;
+
+}
+
+void  exclusion_temps(struct Graphe graphe) {
+
+
+
+    FILE *file = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+
+
+    int a10=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min2;
+    double time2;
+
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a10==0){
+            min2=num2;
+        }
+
+        if (num2>a10){
+            a10=num2;
+        }
+
+
+    }
+
+    fclose(file);
+    char nomdufichier2 [100];
+
+
+    FILE *file2 = fopen("temps_cycle.txt", "r");
+    if (file2 == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+float temps_cycle;
+fscanf(file2,"%f",&temps_cycle);
+
+
+
+fclose (file2);
+    FILE *file3 = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+    // Initialisation du tableau des sommets avec la valeur -10
+    float tableau[a10];
+    for (int i = min2; i <a10+1 ; i++) {
+        tableau[i] = -10.0;
+    }
+
+    int num;
+    double time;
+    while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+        tableau[num] = time;
+
+
+
+    }
+    fclose(file3);
+
+    // Affichage du tableau des temps
+    /*
+    for (int i = min; i < a10+1; i++) {
+        if (tableau[i] != -10.0) {
+            printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+        } else {
+            printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+        }
+    }
+*/
+    float tabtemps[graphe.ordre+1];
+    for (int z5=0; z5<graphe.ordre+1;z5++){
+        tabtemps[z5]=0;
+    }
+    int a;
+    int h=0;
+    int ve=0;
+    int groupe=0-min2;
+    int tab2[graphe.ordre+1];
+    int groupemax=0;
+    for (int o=0 ;o<graphe.ordre+1;o++){
+        tab2[o]=-10;
+
+    }
+    for (int z=0 ; z<graphe.ordre+1;z++){
+        if (tab2[z]==-10){
+            groupe++;
+            if (groupe>1){
+            for (int i6=0 ;i6<graphe.ordre;i6++){
+                if (tab2[i6]>=groupemax){
+                    groupemax=tab2[i6];
+
+                }
+
+            }
+
+            groupe=groupemax+1;
+            }
+
+
+
+
+
+
+        }
+
+
+
+        for (int z1=0 ; z1<graphe.ordre+1;z1++){
+
+
+            if (tab2[z1]==-10){
+
+
+
+
+
+                if (graphe.matrice[z][z1] ==0  ){
+                    if (tab2[z]==-10 &&  tabtemps[groupe]+tableau[z]<=temps_cycle){
+                        tabtemps[groupe]=tabtemps[groupe]+tableau[z];
+                        tab2[z]=groupe;
+                    }
+
+
+
+                    a=3;
+                    for (int z2=0 ; z2<graphe.ordre+1;z2++){
+
+
+                        if (tab2[z2]==groupe){
+                            if (graphe.matrice[z2][z1] !=0 && graphe.matrice[z1][z2] !=0 ){
+                                a=2;
+                            }
+                        }
+
+                    }
+
+                    if (a==3 && tabtemps[groupe]+tableau[z1]<temps_cycle && tab2[z1]==-10){
+                        tab2[z1]=groupe;
+
+
+                        tabtemps[groupe]=tabtemps[groupe]+tableau[z1];
+
+
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                }
+            }
+        }
+    }
+    int k=0;
+    for (int i11=1;i11<groupemax+2;i11++ ){
+        for (int i5=min2;i5< graphe.ordre+1; i5++){
+
+            if (tableau[i5]!=-10  ){
+                k=0;
+                for (int p=min2;p<graphe.ordre+1;p++){
+                    if (graphe.matrice[i5][p]!=-2){
+                        k=1;
+                    }
+                }
+
+                if (k==0 && tab2[i5]==-10){
+                    if (tabtemps[i11]+tableau[i5]<temps_cycle){
+                        tabtemps[i11]=tabtemps[i11]+tableau[i5];
+                        tab2[i5]=i11;
+                    }
+                }
+            }
+        }
+    }
+printf("contrainte d'exclusion + temps de cycle \n");
+
+    for (int i9=1;i9<groupemax+2;i9++ ){
+        printf("\n groupe %d \n:",i9);
+        for (int i5=0;i5< graphe.ordre+1; i5++){
+            if (tab2[i5]!=-10 && tab2[i5]==i9){
+
+                printf(" %d," ,i5) ;
+            }
+        }
+    }
+    printf("\n");
+    int variable;
+    int groupes[graphe.ordre];
+    for (int i7=0; i7<graphe.ordre+1;i7++){
+        groupes[i7]=-10;
+    }
+    for (int i7=0; i7<graphe.ordre+1;i7++){
+        variable=0;
+        for (int i8=0; i8<graphe.ordre+1;i8++){
+            if (tab2[i8]==i7){
+                variable++;
+            }
+
+
+        }
+        groupes[i7]=variable;
+
+        if (variable!=0){
+            printf("le groupe %d est compose de %d sommets \n",i7,variable);
+        }
+
+    }
+    for (int i5=0; i5<graphe.ordre ;i5++){
+    if (tabtemps[i5]!=0){
+        printf("le temps du groupe %d est %f\n",i5,tabtemps[i5]);
+
+    }
+    }
+
+
+}
+void temps_precedence(struct Graphe graphe){
+    FILE *file = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+
+
+    int a10=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min2;
+    double time2;
+
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a10==0){
+            min2=num2;
+        }
+
+        if (num2>a10){
+            a10=num2;
+        }
+
+
+    }
+
+    fclose(file);
+    char nomdufichier2 [100];
+
+
+    FILE *file2 = fopen("temps_cycle.txt", "r");
+    if (file2 == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+    float temps_cycle;
+    fscanf(file2,"%f",&temps_cycle);
+
+
+
+    fclose (file2);
+    FILE *file3 = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+    // Initialisation du tableau des sommets avec la valeur -10
+    float tableau[a10];
+    for (int i = min2; i <a10+1 ; i++) {
+        tableau[i] = -10.0;
+    }
+
+    int num;
+    double time;
+    while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+        tableau[num] = time;
+
+
+
+    }
+    fclose(file3);
+
+    // Affichage du tableau des temps
+    /*
+    for (int i = min; i < a10+1; i++) {
+        if (tableau[i] != -10.0) {
+            printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+        } else {
+            printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+        }
+    }
+*/
+    float tabtemps[graphe.ordre+1];
+    for (int z5=0; z5<graphe.ordre+1;z5++){
+        tabtemps[z5]=0;
+    }
+
+
+    FILE *fichier2;
+    int u = 0, v = 0, ordre2 = 0;
+    fichier2 = fopen("precedences.txt", "r");
+    if (fichier2 == NULL) {
+        printf("Erreur lors de l'ouverture du fichier \n");
+        exit(1);
+    }
+
+
+    while (fscanf(fichier2, "%d %d", &u, &v) != EOF) {
+        if (u > ordre2) ordre2 = u;
+        if (v > ordre2) ordre2 = v;
+    }
+    fclose(fichier2);
+
+
+    int precedence[ordre2 + 1][ordre2 + 1];
+    for (int i = 0; i <= ordre2; i++) {
+        for (int j = 0; j <= ordre2; j++) {
+            precedence[i][j] = -2;
+        }
+    }
+
+    printf("temps de cycle et precedence\n");
+// Marquer les précédences
+    fichier2 = fopen("precedences.txt", "r");
+    int tableau15[ordre2];
+    while (fscanf(fichier2, "%d %d", &u, &v) != EOF) {
+        precedence[u][v] = 1;
+
+
+        tableau15[v]=1;   tableau15[u]=1;
+    }
+    fclose(fichier2);
+int tableau8[ordre2];
+for (int i=0 ;i<ordre2+1;i++){
+    tableau8[i]=-1;
+}
+int e=0;
+int tabretenir[ordre2];
+int b=0;
+int a;
+int groupe=0;
+int groupemax=0;
+
+
+
+    for (int z = 0; z <= ordre2+1; z++) {
+        int predecesseur = 0;
+
+
+
+        a=1;
+        for (int z3=0;z3<ordre2+1;z3++){
+            if (precedence[z3][z]==1 && precedence[z3][z]!=3){
+                a=0;
+
+            }
+        }
+
+        for (int z3=0;z3<ordre2+1;z3++){
+            if (tableau8[z3]!=-1){
+
+
+            if (precedence[z3][z]==1 || precedence[z3][z]==3  ){
+                if (tableau8[z]==-1){
+                if (tableau[z]+tabtemps[groupe]<temps_cycle){
+                    tableau8 [z]=groupe;
+                 tabtemps[groupe]=tableau[z]+tabtemps[groupe];
+
+                }
+
+            }
+            }
+        }
+        }
+        if (tableau8[z]==-1 && tableau15[z]==1 && a==1  ){
+
+            groupe++;
+            for (int i=0;i<ordre2+1;i++){
+                tabretenir[i]=-1;
+            }
+            if (groupe>1){
+                for (int i6=0 ;i6<graphe.ordre;i6++){
+                    if (tableau8[i6]>=groupemax){
+                        groupemax=tableau8[i6];
+
+                    }
+
+                }
+
+                groupe=groupemax+1;
+            }
+            if (tableau[z]+tabtemps[groupe]<temps_cycle && tableau8[z]==-1){
+                tableau8 [z]=groupe;
+                tabtemps[groupe]=tableau[z]+tabtemps[groupe];
+
+                e=z;
+
+
+            }
+
+
+        }
+        if (a==1){
+
+
+
+
+
+         e=z;
+
+
+            for (int z13=0; z13<ordre2+1;z13++){
+                if (tabretenir[z13]==1 ){
+
+
+                    e=z13;
+
+                    if (tableau8 [e]==-1){
+                        if (tableau[e]+tabtemps[groupe]<temps_cycle){
+
+                            if (tableau8 [e]==-1){
+
+
+
+
+                            tabtemps[groupe]=tableau[e]+tabtemps[groupe];
+
+                            tableau8 [e]=groupe;
+                            for (int h=0;h<ordre2+1;h++){
+                                if (precedence[e][h]==1){
+                                    precedence[e][h]=3;
+                                }
+                            }
+                        }
+                    }
+                    }
+
+
+
+                }
+
+
+            for (int z10=1;z10<ordre2+1;z10++){
+
+
+                if (precedence[e][z10]==1 ||  precedence[e][z10]==3 ){
+                    if (tableau8[z10]==-1 && tableau8[e]!=-1 ){
+
+                    if (tableau[z10]+tabtemps[groupe]<temps_cycle){
+                        tableau8 [z10]=groupe;
+                        for (int i3=0;i3<ordre2+1;i3++){
+                            if (precedence[z10][i3]==1){
+                                tabretenir[i3]=1;
+                            }
+
+
+                        }
+
+
+                       tabtemps[groupe]=tableau[z10]+tabtemps[groupe];
+
+                       e=z10;
+                       z10=1;
+                        for (int h=0;h<ordre2+1;h++){
+                            if (precedence[e][h]==1){
+                                precedence[e][h]=3;
+                            }
+                        }
+
+
+
+
+                    }
+                    }
+                }
+
+            }
+                }
+
+        }
+    }
+    for (int f3=min2;f3<ordre2+1;f3++){
+if (tableau[f3]!=-10){
+    if(tableau8[f3]==-1){
+        if (tableau[f3]+tabtemps[groupe]<temps_cycle){
+            tableau8[f3]=groupe;
+        }
+        if (tableau[f3]+tabtemps[groupe]>temps_cycle){
+            tableau8[f3]=groupe+1;
+            }
+
+    }
+
+}
+    }
+printf("\n");
+    for (int i9=1;i9<groupe+1;i9++ ){
+        printf("\n groupe %d \n:",i9);
+        for (int i5=0;i5< graphe.ordre+1; i5++){
+            if ( tableau8[i5]==i9){
+
+                printf(" %d," ,i5) ;
+            }
+        }
+    }
+    printf("\n");
+    for (int i6=0;i6<ordre2+1;i6++){
+if (tabtemps[i6]!=0){
+    printf("%f est le temps du groupe %d \n",tabtemps[i6],i6);
+}
+}
+int variable;
+    int groupes[ordre2];
+    for (int i7=0; i7<graphe.ordre+1;i7++){
+        variable=0;
+        for (int i8=0; i8<graphe.ordre+1;i8++){
+            if (tableau8[i8]==i7){
+                variable++;
+            }
+
+
+        }
+        groupes[i7]=variable;
+
+        if (variable!=0){
+            printf("le groupe %d est compose de %d sommets \n",i7,variable);
+        }
+}
+    }
+
+    void exclusion_precedence(struct Graphe graphe){
+
+        FILE *file = fopen("operations.txt", "r");
+        if (file == NULL) {
+            perror("Erreur lors de l'ouverture du fichier");
+
+        }
+
+
+
+        int a10=0;
+
+        // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+        int num2;
+        int min2;
+        double time2;
+
+        while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+            if (a10==0){
+                min2=num2;
+            }
+
+            if (num2>a10){
+                a10=num2;
+            }
+
+
+        }
+
+        fclose(file);
+        char nomdufichier2 [100];
+
+
+        FILE *file2 = fopen("temps_cycle.txt", "r");
+        if (file2 == NULL) {
+            perror("Erreur lors de l'ouverture du fichier");
+
+        }
+        float temps_cycle;
+        fscanf(file2,"%f",&temps_cycle);
+        temps_cycle=1000;
+
+
+
+        fclose (file2);
+        FILE *file3 = fopen("operations.txt", "r");
+        if (file == NULL) {
+            perror("Erreur lors de l'ouverture du fichier");
+
+        }
+
+        // Initialisation du tableau des sommets avec la valeur -10
+        float tableau[a10];
+        for (int i = min2; i <a10+1 ; i++) {
+            tableau[i] = -10.0;
+        }
+
+        int num;
+        double time;
+        while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+            tableau[num] = time;
+
+
+
+        }
+        fclose(file3);
+
+        // Affichage du tableau des temps
+        /*
+        for (int i = min; i < a10+1; i++) {
+            if (tableau[i] != -10.0) {
+                printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+            } else {
+                printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+            }
+        }
+    */
+        float tabtemps[graphe.ordre+1];
+        for (int z5=0; z5<graphe.ordre+1;z5++){
+            tabtemps[z5]=0;
+        }
+
+
+        FILE *fichier2;
+        int u = 0, v = 0, ordre2 = 0;
+        fichier2 = fopen("precedences.txt", "r");
+        if (fichier2 == NULL) {
+            printf("Erreur lors de l'ouverture du fichier \n");
+            exit(1);
+        }
+
+
+        while (fscanf(fichier2, "%d %d", &u, &v) != EOF) {
+            if (u > ordre2) ordre2 = u;
+            if (v > ordre2) ordre2 = v;
+        }
+        fclose(fichier2);
+
+        int n=0;
+        int precedence[ordre2 + 1][ordre2 + 1];
+        for (int i = 0; i <= ordre2; i++) {
+            for (int j = 0; j <= ordre2; j++) {
+                precedence[i][j] = -2;
+            }
+        }
+
+        printf("precedence et exclusion\n");
+// Marquer les précédences
+        fichier2 = fopen("precedences.txt", "r");
+        int tableau15[ordre2];
+        while (fscanf(fichier2, "%d %d", &u, &v) != EOF) {
+            precedence[u][v] = 1;
+
+
+            tableau15[v]=1;   tableau15[u]=1;
+        }
+        fclose(fichier2);
+        int tableau8[ordre2];
+        for (int i=0 ;i<ordre2+1;i++){
+            tableau8[i]=-1;
+        }
+        int e=0;
+        int tabretenir[ordre2];
+        int b=0;
+        int a;
+        int groupe=0;
+        int groupemax=0;
+
+
+
+        for (int z = 0; z <= ordre2+1; z++) {
+            int predecesseur = 0;
+
+
+
+            a=1;
+            for (int z3=0;z3<ordre2+1;z3++){
+                if (precedence[z3][z]==1 && precedence[z3][z]!=3){
+                    a=0;
+
+                }
+            }
+
+            for (int z3=0;z3<ordre2+1;z3++){
+                if (tableau8[z3]!=-1){
+
+
+                    if (precedence[z3][z]==1 || precedence[z3][z]==3  ){
+                        if (tableau8[z]==-1){
+                            if (tableau[z]+tabtemps[groupe]<temps_cycle){
+                                n=1;
+                                for (int k10=0;k10<ordre2+1;k10++){
+                                    if (tableau8[k10]==groupe){
+                                        if (graphe.matrice[k10][z]!=0 && graphe.matrice[z][k10]!=0 && graphe.matrice[z][k10]!=-2){
+                                            n=0;
+                                        }
+                                    }
+                                }
+                                if (n==1){
+                                    tableau8 [z]=groupe;
+                                    tabtemps[groupe]=tableau[z]+tabtemps[groupe];
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+            }
+            if (tableau8[z]==-1 && tableau15[z]==1 && a==1  ){
+
+                groupe++;
+                for (int i=0;i<ordre2+1;i++){
+                    tabretenir[i]=-1;
+                }
+                if (groupe>1){
+                    for (int i6=0 ;i6<graphe.ordre;i6++){
+                        if (tableau8[i6]>=groupemax){
+                            groupemax=tableau8[i6];
+
+                        }
+
+                    }
+
+                    groupe=groupemax+1;
+                }
+                if (tableau[z]+tabtemps[groupe]<temps_cycle && tableau8[z]==-1){
+                    n=1;
+
+                    for (int k10=0;k10<ordre2+1;k10++){
+                        if (tableau8[k10]==groupe){
+                            if (graphe.matrice[k10][z]!=0 && graphe.matrice[z][k10]!=0 && graphe.matrice[z][k10]!=-2){
+                                n=0;
+                            }
+                        }
+                    }
+                    if (n==1){
+                        tableau8 [z]=groupe;
+                        tabtemps[groupe]=tableau[z]+tabtemps[groupe];
+
+                        e=z;
+                    }
+
+
+                }
+
+
+            }
+            if (a==1){
+
+
+
+
+
+                e=z;
+
+
+                for (int z13=0; z13<ordre2+1;z13++){
+                    if (tabretenir[z13]==1 ){
+
+
+                        e=z13;
+
+                        if (tableau8 [e]==-1){
+                            if (tableau[e]+tabtemps[groupe]<temps_cycle){
+
+                                if (tableau8 [e]==-1){
+                                    n=1;
+
+                                    for (int k10=0;k10<ordre2+1;k10++){
+                                        if (tableau8[k10]==groupe){
+                                            if (graphe.matrice[k10][e]!=0 && graphe.matrice[e][k10]!=0 && graphe.matrice[e][k10]!=-2){
+                                                n=0;
+                                            }
+                                        }
+                                    }
+
+
+
+                                    if (n==1){
+                                        tabtemps[groupe]=tableau[e]+tabtemps[groupe];
+
+                                        tableau8 [e]=groupe;
+                                        for (int h=0;h<ordre2+1;h++){
+                                            if (precedence[e][h]==1){
+                                                precedence[e][h]=3;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+
+                    }
+
+
+                    for (int z10=1;z10<ordre2+1;z10++){
+
+
+                        if (precedence[e][z10]==1 ||  precedence[e][z10]==3 ){
+                            if (tableau8[z10]==-1 && tableau8[e]!=-1 ){
+                                n=1;
+
+                                if (tableau[z10]+tabtemps[groupe]<temps_cycle){
+                                    for (int k10=0;k10<ordre2+1;k10++){
+                                        if (tableau8[k10]==groupe){
+                                            if (graphe.matrice[k10][z10]!=0 && graphe.matrice[z10][k10]!=0 && graphe.matrice[z10][k10]!=-2){
+                                                n=0;
+                                            }
+                                        }
+                                    }
+                                    if(n==1){
+                                        tableau8 [z10]=groupe;
+                                        for (int i3=0;i3<ordre2+1;i3++){
+                                            if (precedence[z10][i3]==1){
+                                                tabretenir[i3]=1;
+                                            }
+
+
+                                        }
+
+
+                                        tabtemps[groupe]=tableau[z10]+tabtemps[groupe];
+
+                                        e=z10;
+                                        z10=1;
+                                        for (int h=0;h<ordre2+1;h++){
+                                            if (precedence[e][h]==1){
+                                                precedence[e][h]=3;
+                                            }
+                                        }
+                                    }
+
+
+
+
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        printf("\n");
+        for (int i9=1;i9<groupe+1;i9++ ){
+            printf("\n groupe %d \n:",i9);
+            for (int i5=0;i5< graphe.ordre+1; i5++){
+                if ( tableau8[i5]==i9){
+
+                    printf(" %d," ,i5) ;
+                }
+            }
+        }
+        printf("\n");
+        for (int i6=0;i6<ordre2+1;i6++){
+            if (tabtemps[i6]!=0){
+                printf("%f est le temps du groupe %d \n",tabtemps[i6],i6);
+            }
+        }
+
+
+        int variable;
+        int groupes[ordre2];
+        for (int i7=0; i7<graphe.ordre+1;i7++){
+            variable=0;
+            for (int i8=0; i8<graphe.ordre+1;i8++){
+                if (tableau8[i8]==i7){
+                    variable++;
+                }
+
+
+            }
+            groupes[i7]=variable;
+
+            if (variable!=0){
+                printf("le groupe %d est compose de %d sommets \n",i7,variable);
+            }
+        }
+}
+
+
+
+void tout(struct Graphe graphe){
+
+
+
+    FILE *file = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+
+
+    int a10=0;
+
+    // Initialisation du tableau des sommets avec la valeur -10
+
+
+
+    int num2;
+    int min2;
+    double time2;
+
+    while (fscanf(file, "%d %lf", &num2, &time2) != EOF) {
+        if (a10==0){
+            min2=num2;
+        }
+
+        if (num2>a10){
+            a10=num2;
+        }
+
+
+    }
+
+    fclose(file);
+    char nomdufichier2 [100];
+
+
+    FILE *file2 = fopen("temps_cycle.txt", "r");
+    if (file2 == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+    float temps_cycle;
+    fscanf(file2,"%f",&temps_cycle);
+
+
+
+    fclose (file2);
+    FILE *file3 = fopen("operations.txt", "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+
+    }
+
+    // Initialisation du tableau des sommets avec la valeur -10
+    float tableau[a10];
+    for (int i = min2; i <a10+1 ; i++) {
+        tableau[i] = -10.0;
+    }
+
+    int num;
+    double time;
+    while (fscanf(file, "%d %lf", &num, &time) != EOF) {
+
+        tableau[num] = time;
+
+
+
+    }
+    fclose(file3);
+
+    // Affichage du tableau des temps
+    /*
+    for (int i = min; i < a10+1; i++) {
+        if (tableau[i] != -10.0) {
+            printf("Sommet %d a un temps de %0.2lf\n", i, tableau[i]);
+        } else {
+            printf("Sommet %d n'existe pas dans le fichier et a donc une valeur de %0.2lf\n", i, tableau[i]);
+        }
+    }
+*/
+    float tabtemps[graphe.ordre+1];
+    for (int z5=0; z5<graphe.ordre+1;z5++){
+        tabtemps[z5]=0;
+    }
+
+
+    FILE *fichier2;
+    int u = 0, v = 0, ordre2 = 0;
+    fichier2 = fopen("precedences.txt", "r");
+    if (fichier2 == NULL) {
+        printf("Erreur lors de l'ouverture du fichier \n");
+        exit(1);
+    }
+
+
+    while (fscanf(fichier2, "%d %d", &u, &v) != EOF) {
+        if (u > ordre2) ordre2 = u;
+        if (v > ordre2) ordre2 = v;
+    }
+    fclose(fichier2);
+
+int n=0;
+    int precedence[ordre2 + 1][ordre2 + 1];
+    for (int i = 0; i <= ordre2; i++) {
+        for (int j = 0; j <= ordre2; j++) {
+            precedence[i][j] = -2;
+        }
+    }
+
+    printf("toutes les contraintes\n");
+// Marquer les précédences
+    fichier2 = fopen("precedences.txt", "r");
+    int tableau15[ordre2];
+    while (fscanf(fichier2, "%d %d", &u, &v) != EOF) {
+        precedence[u][v] = 1;
+
+
+        tableau15[v]=1;   tableau15[u]=1;
+    }
+    fclose(fichier2);
+    int tableau8[ordre2];
+    for (int i=0 ;i<ordre2+1;i++){
+        tableau8[i]=-1;
+    }
+    int e=0;
+    int tabretenir[ordre2];
+    int b=0;
+    int a;
+    int groupe=0;
+    int groupemax=0;
+
+
+
+    for (int z = 0; z <= ordre2+1; z++) {
+        int predecesseur = 0;
+
+
+
+        a=1;
+        for (int z3=0;z3<ordre2+1;z3++){
+            if (precedence[z3][z]==1 && precedence[z3][z]!=3){
+                a=0;
+
+            }
+        }
+
+        for (int z3=0;z3<ordre2+1;z3++){
+            if (tableau8[z3]!=-1){
+
+
+                if (precedence[z3][z]==1 || precedence[z3][z]==3  ){
+                    if (tableau8[z]==-1){
+                        if (tableau[z]+tabtemps[groupe]<temps_cycle){
+                        n=1;
+                            for (int k10=0;k10<ordre2+1;k10++){
+                                if (tableau8[k10]==groupe){
+                                    if (graphe.matrice[k10][z]!=0 && graphe.matrice[z][k10]!=0 && graphe.matrice[z][k10]!=-2){
+                                        n=0;
+                                    }
+                                }
+                            }
+                            if (n==1){
+                            tableau8 [z]=groupe;
+                            tabtemps[groupe]=tableau[z]+tabtemps[groupe];
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+        if (tableau8[z]==-1 && tableau15[z]==1 && a==1  ){
+
+            groupe++;
+            for (int i=0;i<ordre2+1;i++){
+                tabretenir[i]=-1;
+            }
+            if (groupe>1){
+                for (int i6=0 ;i6<graphe.ordre;i6++){
+                    if (tableau8[i6]>=groupemax){
+                        groupemax=tableau8[i6];
+
+                    }
+
+                }
+
+                groupe=groupemax+1;
+            }
+            if (tableau[z]+tabtemps[groupe]<temps_cycle && tableau8[z]==-1){
+                n=1;
+
+                for (int k10=0;k10<ordre2+1;k10++){
+                    if (tableau8[k10]==groupe){
+                        if (graphe.matrice[k10][z]!=0 && graphe.matrice[z][k10]!=0 && graphe.matrice[z][k10]!=-2){
+                            n=0;
+                        }
+                    }
+                }
+                if (n==1){
+                tableau8 [z]=groupe;
+                tabtemps[groupe]=tableau[z]+tabtemps[groupe];
+
+                e=z;
+                }
+
+
+            }
+
+
+        }
+        if (a==1){
+
+
+
+
+
+            e=z;
+
+
+            for (int z13=0; z13<ordre2+1;z13++){
+                if (tabretenir[z13]==1 ){
+
+
+                    e=z13;
+
+                    if (tableau8 [e]==-1){
+                        if (tableau[e]+tabtemps[groupe]<temps_cycle){
+
+                            if (tableau8 [e]==-1){
+                                n=1;
+
+                                for (int k10=0;k10<ordre2+1;k10++){
+                                    if (tableau8[k10]==groupe){
+                                        if (graphe.matrice[k10][e]!=0 && graphe.matrice[e][k10]!=0 && graphe.matrice[e][k10]!=-2){
+                                            n=0;
+                                        }
+                                    }
+                                }
+
+
+
+                               if (n==1){
+                                tabtemps[groupe]=tableau[e]+tabtemps[groupe];
+
+                                tableau8 [e]=groupe;
+                                for (int h=0;h<ordre2+1;h++){
+                                    if (precedence[e][h]==1){
+                                        precedence[e][h]=3;
+                                    }
+                                }
+                            }
+                            }
+                        }
+                    }
+
+
+
+                }
+
+
+                for (int z10=1;z10<ordre2+1;z10++){
+
+
+                    if (precedence[e][z10]==1 ||  precedence[e][z10]==3 ){
+                        if (tableau8[z10]==-1 && tableau8[e]!=-1 ){
+                            n=1;
+
+                            if (tableau[z10]+tabtemps[groupe]<temps_cycle){
+                                for (int k10=0;k10<ordre2+1;k10++){
+                                    if (tableau8[k10]==groupe){
+                                        if (graphe.matrice[k10][z10]!=0 && graphe.matrice[z10][k10]!=0 && graphe.matrice[z10][k10]!=-2){
+                                            n=0;
+                                        }
+                                    }
+                                }
+                                if(n==1){
+                                tableau8 [z10]=groupe;
+                                for (int i3=0;i3<ordre2+1;i3++){
+                                    if (precedence[z10][i3]==1){
+                                        tabretenir[i3]=1;
+                                    }
+
+
+                                }
+
+
+                                tabtemps[groupe]=tableau[z10]+tabtemps[groupe];
+
+                                e=z10;
+                                z10=1;
+                                for (int h=0;h<ordre2+1;h++){
+                                    if (precedence[e][h]==1){
+                                        precedence[e][h]=3;
+                                    }
+                                }
+                                }
+
+
+
+
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    printf("\n");
+    for (int i9=1;i9<groupe+1;i9++ ){
+        printf("\n groupe %d \n:",i9);
+        for (int i5=0;i5< graphe.ordre+1; i5++){
+            if ( tableau8[i5]==i9){
+
+                printf(" %d," ,i5) ;
+            }
+        }
+    }
+    printf("\n");
+    for (int i6=0;i6<ordre2+1;i6++){
+        if (tabtemps[i6]!=0){
+            printf("%f est le temps du groupe %d \n",tabtemps[i6],i6);
+        }
+    }
+
+
+    int variable;
+    int groupes[ordre2];
+    for (int i7=0; i7<graphe.ordre+1;i7++){
+        variable=0;
+        for (int i8=0; i8<graphe.ordre+1;i8++){
+            if (tableau8[i8]==i7){
+                variable++;
+            }
+
+
+        }
+        groupes[i7]=variable;
+
+        if (variable!=0){
+            printf("le groupe %d est compose de %d sommets \n",i7,variable);
+        }
+    }
+}
+int main() {
+    afficher_fichier ();
+    struct Graphe graphe = exclusion();
+    exclusion_temps(graphe);
+   temps_precedence(graphe);
+   exclusion_precedence(graphe);
+   tout(graphe);
+
+
+
+
+
+
+    return 0;
+}
